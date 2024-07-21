@@ -1,43 +1,27 @@
 import React, { useState } from 'react'
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
 import { AnimatedFAB, Button, Card, Text } from 'react-native-paper'
+import CreateTodo from './CreateTodo'
 
-const TaskCard = ({ text, completed, createdAt }) => {
+const TaskCard = ({ index, deleteTodo, text, completed, createdAt }) => {
+    console.log(index);
     return <Card style={styles.taskCard}>
         <Card.Content>
+            <Text>{createdAt.toDateString()} {createdAt.toLocaleTimeString()}</Text>
             <Text>{text}</Text>
         </Card.Content>
         <Card.Actions>
             <Button icon="pencil">Edit</Button>
-            <Button icon="delete">Delete</Button>
+            <Button icon="delete" onPress={() => deleteTodo(index)}>Delete</Button>
         </Card.Actions>
     </Card>
 }
 
 const ListTodo = () => {
 
-    const [taskList, setTaskList] = useState([
-        { text: 'Learn React', completed: false, createdAt: new Date() },
-        { text: 'Learn Angular', completed: false, createdAt: new Date() },
-        { text: 'Learn Vue', completed: false, createdAt: new Date() },
-        { text: 'Learn NextJS', completed: false, createdAt: new Date() },
-        { text: 'Learn React', completed: false, createdAt: new Date() },
-        { text: 'Learn Angular', completed: false, createdAt: new Date() },
-        { text: 'Learn Vue', completed: false, createdAt: new Date() },
-        { text: 'Learn NextJS', completed: false, createdAt: new Date() },
-        { text: 'Learn React', completed: false, createdAt: new Date() },
-        { text: 'Learn Angular', completed: false, createdAt: new Date() },
-        { text: 'Learn Vue', completed: false, createdAt: new Date() },
-        { text: 'Learn NextJS', completed: false, createdAt: new Date() },
-        { text: 'Learn React', completed: false, createdAt: new Date() },
-        { text: 'Learn Angular', completed: false, createdAt: new Date() },
-        { text: 'Learn Vue', completed: false, createdAt: new Date() },
-        { text: 'Learn NextJS', completed: false, createdAt: new Date() },
-        { text: 'Learn React', completed: false, createdAt: new Date() },
-        { text: 'Learn Angular', completed: false, createdAt: new Date() },
-        { text: 'Learn Vue', completed: false, createdAt: new Date() },
-        { text: 'Learn NextJS', completed: false, createdAt: new Date() }
-    ]);
+    const [taskList, setTaskList] = useState([]);
+
+    const [showTodoForm, setShowTodoForm] = useState(false);
 
     const displayList = () => {
         return <ScrollView style={styles.scrollContent}>
@@ -57,11 +41,18 @@ const ListTodo = () => {
         </ScrollView>
     }
 
+    const deleteTodo = (index) => {
+        setTaskList([...taskList.filter((task, i) => i !== index)]);
+    }
+
     return (
         <View style={styles.container}>
-
-
-
+            <CreateTodo
+                visible={showTodoForm}
+                setVisible={setShowTodoForm}
+                taskList={taskList}
+                setTaskList={setTaskList}
+            />
             <View style={styles.header}>
                 <Text>List Todo</Text>
             </View>
@@ -70,12 +61,14 @@ const ListTodo = () => {
 
                 <FlatList
                     data={taskList}
-                    renderItem={({ item }) => <TaskCard {...item} />}
+                    renderItem={({ item, index }) => <TaskCard deleteTodo={deleteTodo} {...item} index={index} />}
                     keyExtractor={(item, index) => { return index }}
+                    ListEmptyComponent={() => <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#999', textAlign: 'center' }}>No Task Added Yet</Text>}
                 />
             </View>
 
             <AnimatedFAB
+                onPress={() => setShowTodoForm(true)}
                 icon='plus'
                 label='Add Task'
                 style={styles.addBtn}
