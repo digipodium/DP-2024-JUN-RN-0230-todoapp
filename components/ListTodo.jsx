@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FlatList, Keyboard, ScrollView, StyleSheet, View } from 'react-native'
-import { AnimatedFAB, Button, Card, Text, TextInput } from 'react-native-paper'
+import { AnimatedFAB, Button, Card, Checkbox, Divider, IconButton, Menu, Provider, Text, TextInput } from 'react-native-paper'
 import CreateTodo from './CreateTodo'
 
 const TaskCard = ({ index, deleteTodo, taskList, setTaskList, text, completed, createdAt }) => {
@@ -16,11 +16,17 @@ const TaskCard = ({ index, deleteTodo, taskList, setTaskList, text, completed, c
         setEditMode(false);
     }
 
+    const toggleTask = () => {
+        const temp = taskList;
+        temp[index].completed = !temp[index].completed;
+        setTaskList([...temp]);
+    }
+
     console.log(index);
-    return <Card style={styles.taskCard}>
+    return <Card style={{ ...styles.taskCard, backgroundColor: completed ? 'lightgreen' : 'white' }}>
         <Card.Content>
             <Text>{createdAt.toDateString()} {createdAt.toLocaleTimeString()}</Text>
-
+            <Checkbox status={completed ? 'checked' : 'unchecked'} onPress={toggleTask} />
             {
                 editMode ? (
                     <TextInput onChangeText={setUserInput} value={userInput} />
@@ -30,8 +36,13 @@ const TaskCard = ({ index, deleteTodo, taskList, setTaskList, text, completed, c
             }
         </Card.Content>
         <Card.Actions>
-            <Button icon="pencil" onPress={() => { editMode ? updateTask() : setEditMode(true) }}>{ editMode ? 'Update' : 'Edit' }</Button>
+
+            <Button icon="pencil" onPress={() => { editMode ? updateTask() : setEditMode(true) }}>
+                {editMode ? 'Update' : 'Edit'}
+            </Button>
+
             <Button icon="delete" onPress={() => deleteTodo(index)}>Delete</Button>
+
         </Card.Actions>
     </Card>
 }
@@ -41,6 +52,7 @@ const ListTodo = () => {
     const [taskList, setTaskList] = useState([]);
 
     const [showTodoForm, setShowTodoForm] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
 
 
     const deleteTodo = (index) => {
@@ -56,7 +68,18 @@ const ListTodo = () => {
                 setTaskList={setTaskList}
             />
             <View style={styles.header}>
-                <Text>List Todo</Text>
+                <Provider>
+                    <Menu
+                        visible={menuVisible}
+                        onDismiss={() => setMenuVisible(false)}
+                        anchor={<IconButton iconColor='white' style={styles.menuIcon} icon='dots-vertical' onPress={() => setMenuVisible(true)} />}>
+                        <Menu.Item leadingIcon='sort' onPress={() => { }} title="Sort A-Z" />
+                        <Menu.Item leadingIcon='sort-bool-ascending-variant' onPress={() => { }} title="Sort by Completed" />
+                        <Divider />
+                        <Menu.Item leadingIcon='sort-calendar-ascending' onPress={() => { }} title="Sort By Date" />
+                    </Menu>
+                </Provider>
+                <Text style={styles.title}>List Todo</Text>
             </View>
             <View style={styles.content}>
                 {/* {displayList()} */}
@@ -88,10 +111,21 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        backgroundColor: 'blue',
+        backgroundColor: 'crimson',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
     },
     content: {
         flex: 5,
+    },
+    menuIcon: {
+        top: 10,
+        right: 10,
     },
     scrollContent: {
         padding: 20,
