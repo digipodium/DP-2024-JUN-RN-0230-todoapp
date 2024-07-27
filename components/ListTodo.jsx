@@ -1,17 +1,36 @@
 import React, { useState } from 'react'
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
-import { AnimatedFAB, Button, Card, Text } from 'react-native-paper'
+import { FlatList, Keyboard, ScrollView, StyleSheet, View } from 'react-native'
+import { AnimatedFAB, Button, Card, Text, TextInput } from 'react-native-paper'
 import CreateTodo from './CreateTodo'
 
-const TaskCard = ({ index, deleteTodo, text, completed, createdAt }) => {
+const TaskCard = ({ index, deleteTodo, taskList, setTaskList, text, completed, createdAt }) => {
+
+    const [editMode, setEditMode] = useState(false);
+    const [userInput, setUserInput] = useState(text);
+
+    const updateTask = () => {
+        const temp = taskList;
+        temp[index].text = userInput;
+        setTaskList([...temp]);
+        Keyboard.dismiss();
+        setEditMode(false);
+    }
+
     console.log(index);
     return <Card style={styles.taskCard}>
         <Card.Content>
             <Text>{createdAt.toDateString()} {createdAt.toLocaleTimeString()}</Text>
-            <Text>{text}</Text>
+
+            {
+                editMode ? (
+                    <TextInput onChangeText={setUserInput} value={userInput} />
+                ) : (
+                    <Text>{text}</Text>
+                )
+            }
         </Card.Content>
         <Card.Actions>
-            <Button icon="pencil">Edit</Button>
+            <Button icon="pencil" onPress={() => { editMode ? updateTask() : setEditMode(true) }}>{ editMode ? 'Update' : 'Edit' }</Button>
             <Button icon="delete" onPress={() => deleteTodo(index)}>Delete</Button>
         </Card.Actions>
     </Card>
@@ -23,23 +42,6 @@ const ListTodo = () => {
 
     const [showTodoForm, setShowTodoForm] = useState(false);
 
-    const displayList = () => {
-        return <ScrollView style={styles.scrollContent}>
-            {
-                taskList.map((task, index) => {
-                    return <Card key={index} style={styles.taskCard}>
-                        <Card.Content>
-                            <Text>{task.text}</Text>
-                        </Card.Content>
-                        <Card.Actions>
-                            <Button icon="pencil">Edit</Button>
-                            <Button icon="delete">Delete</Button>
-                        </Card.Actions>
-                    </Card>
-                })
-            }
-        </ScrollView>
-    }
 
     const deleteTodo = (index) => {
         setTaskList([...taskList.filter((task, i) => i !== index)]);
@@ -61,7 +63,7 @@ const ListTodo = () => {
 
                 <FlatList
                     data={taskList}
-                    renderItem={({ item, index }) => <TaskCard deleteTodo={deleteTodo} {...item} index={index} />}
+                    renderItem={({ item, index }) => <TaskCard deleteTodo={deleteTodo} taskList={taskList} setTaskList={setTaskList} {...item} index={index} />}
                     keyExtractor={(item, index) => { return index }}
                     ListEmptyComponent={() => <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#999', textAlign: 'center' }}>No Task Added Yet</Text>}
                 />
