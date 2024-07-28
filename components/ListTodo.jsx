@@ -53,7 +53,19 @@ const ListTodo = () => {
 
     const [showTodoForm, setShowTodoForm] = useState(false);
     const [menuVisible, setMenuVisible] = useState(false);
+    const [menuAnchor, setMenuAnchor] = useState({ x: 0, y: 0 })
 
+    const handleMenuPress = (event) => {
+        const { nativeEvent } = event;
+        console.log(nativeEvent);
+        const anchor = {
+            x: nativeEvent.pageX,
+            y: nativeEvent.pageY-20,
+        };
+
+        setMenuAnchor(anchor);
+        setMenuVisible(true);
+    }
 
     const deleteTodo = (index) => {
         setTaskList([...taskList.filter((task, i) => i !== index)]);
@@ -68,17 +80,20 @@ const ListTodo = () => {
                 setTaskList={setTaskList}
             />
             <View style={styles.header}>
-                <Provider>
-                    <Menu
-                        visible={menuVisible}
-                        onDismiss={() => setMenuVisible(false)}
-                        anchor={<IconButton iconColor='white' style={styles.menuIcon} icon='dots-vertical' onPress={() => setMenuVisible(true)} />}>
-                        <Menu.Item leadingIcon='sort' onPress={() => { }} title="Sort A-Z" />
-                        <Menu.Item leadingIcon='sort-bool-ascending-variant' onPress={() => { }} title="Sort by Completed" />
-                        <Divider />
-                        <Menu.Item leadingIcon='sort-calendar-ascending' onPress={() => { }} title="Sort By Date" />
-                    </Menu>
-                </Provider>
+                <IconButton iconColor='white' style={styles.menuIcon} icon='dots-vertical' onPress={handleMenuPress} >
+                </IconButton>
+                
+                <Menu
+                    visible={menuVisible}
+                    onDismiss={() => setMenuVisible(false)}
+                    // anchorPosition='bottom'
+                    // anchor={<IconButton iconColor='white' style={styles.menuIcon} icon='dots-vertical' onPress={() => setMenuVisible(true)} />}>
+                    anchor={menuAnchor}>
+                    <Menu.Item leadingIcon='sort' onPress={() => { }} title="Sort A-Z" />
+                    <Menu.Item leadingIcon='sort-bool-ascending-variant' onPress={() => { }} title="Sort by Completed" />
+                    <Divider />
+                    <Menu.Item leadingIcon='sort-calendar-ascending' onPress={() => { }} title="Sort By Date" />
+                </Menu>
                 <Text style={styles.title}>List Todo</Text>
             </View>
             <View style={styles.content}>
@@ -124,6 +139,7 @@ const styles = StyleSheet.create({
         flex: 5,
     },
     menuIcon: {
+        position: 'absolute',
         top: 10,
         right: 10,
     },
