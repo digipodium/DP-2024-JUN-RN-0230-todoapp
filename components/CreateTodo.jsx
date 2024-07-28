@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { Keyboard, Modal, StyleSheet, View } from 'react-native'
-import { Button, Text, TextInput } from 'react-native-paper'
+import { Button, Dialog, Text, TextInput } from 'react-native-paper'
 
 const CreateTodo = ({ visible, setVisible, taskList, setTaskList }) => {
 
@@ -17,7 +17,10 @@ const CreateTodo = ({ visible, setVisible, taskList, setTaskList }) => {
     }
 
     return (
-        <Modal visible={visible} onRequestClose={() => setVisible(false)} animationType='slide' >
+        <Modal visible={visible} onRequestClose={() => setVisible(false)} animationType='slide'>
+
+           
+
             <View style={styles.container}>
                 <Text variant='headlineMedium' style={styles.title}>Create Todo</Text>
                 <TextInput

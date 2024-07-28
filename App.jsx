@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StatusBar as NativeStatusBar, StyleSheet, Text, View } from 'react-native';
 import ListTodo from './components/ListTodo';
-import { Provider } from 'react-native-paper';
+import { Portal, Provider } from 'react-native-paper';
 
 const statusBarHeight = NativeStatusBar.currentHeight;
 // console.log(statusBarHeight);
@@ -9,10 +9,12 @@ const statusBarHeight = NativeStatusBar.currentHeight;
 export default function App() {
   return (
     <Provider>
-      <View style={styles.container}>
-        <ListTodo />
-        <StatusBar style="auto" />
-      </View>
+      <Portal>
+        <View style={styles.container}>
+          <ListTodo />
+          <StatusBar style="auto" />
+        </View>
+      </Portal >
     </Provider>
   );
 }
@@ -21,6 +23,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: statusBarHeight,
+    // paddingTop: statusBarHeight,
   },
 });
